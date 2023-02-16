@@ -27,17 +27,17 @@
   <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-      <a class="navbar-brand" href="#"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
+      <a class="navbar-brand my-3" href="#"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-house"></i> Accueil</a>
+        <div class="collapse navbar-collapse mx-lg-5" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-lg-0">
+            <li class="nav-item mx-2">
+              <a class="nav-link active" aria-current="page" href="#"><i class="fa-solid fa-house fa-xl"></i> Accueil</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="./post.php"><i class="fa-solid fa-plus"></i> Post</a>
+            <li class="nav-item mx-2">
+              <a class="nav-link" href="./post.php"><i class="fa-solid fa-plus fa-xl"></i> Post</a>
             </li>
           </ul>
         </div>

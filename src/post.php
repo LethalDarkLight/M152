@@ -7,6 +7,7 @@
   * Version     : 1.0.0
   */
 
+  require_once "php/pdo.php";
   require_once "php/tools.php";
 
   // Constantes...
@@ -19,6 +20,7 @@
 
   $fichiers = $_FILES['files'];
   $typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg"); // Correspond au type de fichier accepté
+  $dossierCible = dirname(__DIR__). "/src/uploads/"; // Chemin vers le dossier de stockage
   $tailleDesFichiers = 0; // Correspond à la taille total des fichiers
 
   $messageErreur = "";
@@ -46,26 +48,36 @@
             // Vérifie que le commentaire contient quelques chose. Si ce n'est pas le cas on affiche un message d'erreur
             if($commentaire != "")
             {
-              var_dump($_FILES);
+              $nomDuFichier = basename($fichiers['name'][$i]); // Nom du fichier
+              $typeDuFichier = $fichiers["type"][$i]; // Type de fichier
+              $cheminCible = $dossierCible . uniqid()."-".$nomDuFichier; // Indique le chemin où on veut stocker l'image
 
-              // Ajoute à la base de données
-              AjouterUnPost($commentaire, $fichiers["type"][$i], $fichiers["name"][$i], file_get_contents($fichiers['tmp_name'][$i]));
+              // Stock le fichier dans un dossier 
+              if (move_uploaded_file($fichiers["tmp_name"][$i], $cheminCible))
+              {
+                // Ajoute à la base de données
+                AjouterUnPost($commentaire, $typeDuFichier, $nomDuFichier);
+              }
+              else
+              {
+                $messageErreur = "Les fichiers n'ont pas pu être upload.";
+              }
             }
             else
             {
-              $messageErreur = "Malheureusement le Post n'a pas été publié. Il manque un commentaire";
+              $messageErreur = "Il manque un commentaire";
               break;
             }
           }
           else
           {
-            $messageErreur = "Les fichiers sont trop volumineux";
+            $messageErreur = "Les fichiers sont trop volumineux.";
             break;
           }
         }
         else
         {
-          $messageErreur = "Malheureusement le Post n'a pas été publié. Le fichier ". $fichiers['name'][$i] . " dépasse 3Mo";
+          $messageErreur = "Le fichier ". $fichiers['name'][$i] . " dépasse 3Mo";
           break;
         }
       }
@@ -73,16 +85,17 @@
       {
         if($fichiers["name"][$i] == "")
         {
-          $messageErreur = "Veuillez selectionner un fichier";
+          $messageErreur = "Veuillez selectionner un fichier.";
           break;
         }
         else
         {
-          $messageErreur = "Malheureusement le Post n'a pas été publié. Seul les fichiers de types png jpg et jpeg sont pris en charge.";
+          $messageErreur = "Seul les fichiers de types png jpg et jpeg sont pris en charge.";
           break;
         }
       }
     }
+
   }
 
 ?>
@@ -103,20 +116,20 @@
 
 <body class="bg-body">
 
-  <header>
+<header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#" style="margin-right: 50px;"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
+      <a class="navbar-brand my-3" href="#"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="./index.php"><i class="fa-solid fa-house"></i> Accueil</a>
+        <div class="collapse navbar-collapse mx-lg-5" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-lg-0">
+            <li class="nav-item mx-2">
+              <a class="nav-link" aria-current="page" href="./index.php"><i class="fa-solid fa-house fa-xl"></i> Accueil</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="#"><i class="fa-solid fa-plus"></i> Post</a>
+            <li class="nav-item mx-2">
+              <a class="nav-link active" href="#"><i class="fa-solid fa-plus fa-xl"></i> Post</a>
             </li>
           </ul>
         </div>

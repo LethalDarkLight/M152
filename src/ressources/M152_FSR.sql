@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost:3306
--- Généré le : jeu. 16 fév. 2023 à 12:09
+-- Généré le : jeu. 16 fév. 2023 à 13:50
 -- Version du serveur :  10.3.37-MariaDB-0ubuntu0.20.04.1
 -- Version de PHP : 8.2.3
 
@@ -34,7 +34,6 @@ CREATE TABLE `media` (
   `idMedia` int(11) NOT NULL,
   `typeMedia` varchar(255) NOT NULL,
   `nomMedia` varchar(255) NOT NULL,
-  `image` blob NOT NULL,
   `creationDate` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `idPost` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
