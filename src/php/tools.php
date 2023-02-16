@@ -9,20 +9,22 @@
 require_once "database.php";
 
 // Ajoute un nouveau Post
-function AjouterUnPost($commentaire, $typeMedia, $nomMedia, $media)
+function AjouterUnPost($commentaire, $typeMedia, $nomMedia, $image)
 {
     try
     {
         $query = getConnexion()->prepare("
-        INSERT INTO `post` (`commentaire`)
-        VALUES (?);
-        INSERT INTO `media` (`typeMedia`, `nomMedia`, `media`, `idPost`)
-        VALUES (?,?,? (SELECT `idPost` FROM `post` WHERE `commentaire` = ?))");
-        $query->execute([$commentaire, $typeMedia, $nomMedia, $media, $commentaire]);
-        return $query->fetchAll(PDO::FETCH_ASSOC);
+            INSERT INTO `post` (`commentaire`)
+            VALUES (?);
+
+            INSERT INTO `media` (`typeMedia`, `nomMedia`, `image`, `idPost`)
+            VALUES (?, ?, ?, LAST_INSERT_ID());
+        ");
+        $query->execute([$commentaire, $typeMedia, $nomMedia, $image]);
     }
     catch(PDOException $e)
     {
+        var_dump($image);
         echo 'Exception reçue : ',  $e->getMessage(), "\n";
     }
 }

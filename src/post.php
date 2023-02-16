@@ -46,8 +46,10 @@
             // Vérifie que le commentaire contient quelques chose. Si ce n'est pas le cas on affiche un message d'erreur
             if($commentaire != "")
             {
+              var_dump($_FILES);
+
               // Ajoute à la base de données
-              AjouterUnPost($commentaire, $fichiers["type"][$i], $fichiers["name"][$i], file_get_contents($fichiers["name"][$i]) ,$commentaire);
+              AjouterUnPost($commentaire, $fichiers["type"][$i], $fichiers["name"][$i], file_get_contents($fichiers['tmp_name'][$i]));
             }
             else
             {
