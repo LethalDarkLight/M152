@@ -1,5 +1,5 @@
 <?php
-  /*
+/*
   * Auteur      : Flavio Soares Rodrigues
   * Projet      : M152
   * Description : Crée un site web qui permet d'afficher une page ressemblant à "Facebook du CFPT Ecole d'info"
@@ -7,26 +7,31 @@
   * Version     : 1.0.0
   */
 
-  require_once "php/pdo.php";
-  require_once "php/tools.php";
+require_once "php/pdo.php";
+require_once "php/tools.php";
 
-  // Constantes...
-  define('TAILLE_MAX',70000000); // 70Mo
-  define('TAILLE_MAX_UN_FICHIER',3000000); // 30Mo
+// Constantes...
+define('TAILLE_MAX', 70000000); // 70Mo
+define('TAILLE_MAX_UN_FICHIER', 3000000); // 30Mo
 
-  // Filtrer les champs...
-  $submit = filter_input(INPUT_POST,"submit",FILTER_SANITIZE_SPECIAL_CHARS);
-  $commentaire = filter_input(INPUT_POST,"commentaire",FILTER_SANITIZE_SPECIAL_CHARS);
+// Filtrer les champs...
+$submit = filter_input(INPUT_POST, "submit", FILTER_SANITIZE_SPECIAL_CHARS);
+$commentaire = filter_input(INPUT_POST, "commentaire", FILTER_SANITIZE_SPECIAL_CHARS);
 
-  $fichiers = $_FILES['files'];
-  $typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg"); // Correspond au type de fichier accepté
-  $dossierCible = dirname(__DIR__). "/src/uploads/"; // Chemin vers le dossier de stockage
-  $tailleDesFichiers = 0; // Correspond à la taille total des fichiers
+$typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg"); // Correspond au type de fichier accepté
+$dossierCible = dirname(__DIR__) . "/src/uploads/"; // Chemin vers le dossier de stockage
+$tailleDesFichiers = 0; // Correspond à la taille total des fichiers
 
-  $messageErreur = "";
+$messageErreur = "";
 
-  if ($submit)
+if ($submit)
+{
+  // Vérifie que le commentaire contient quelques chose. Si ce n'est pas le cas on affiche un message d'erreur
+  if ($commentaire != "")
   {
+    $fichiers = $_FILES['files'];
+    $creeUnNouveauCommentaire = true; // Bool qui permet d'attribuer 1 commentaire à plusieurs post
+
     // Parcourir tout les fichiers pour connaître la taille de l'ensemble des fichiers selectionné
     foreach ($fichiers['size'] as $key => $tailleUnFichier)
     {
@@ -34,39 +39,37 @@
     }
 
     // Parcourir tout les fichiers
-    for($i = 0; $i < count($fichiers['name']); $i++)
+    for ($i = 0; $i < count($fichiers['name']); $i++)
     {
       // On regarde si le type de fichier correspond à une image. Si ce n'est pas le cas on affiche un message d'erreur
-      if(in_array($fichiers['type'][$i], $typeDeFichierAccepter))
+      if (in_array($fichiers['type'][$i], $typeDeFichierAccepter))
       {
         // Vérifie que la taille de chaques fichier est inferieur ou égale à la taille max d'un fichier. Si ce n'est pas le cas on affiche un message d'erreur
-        if($fichiers["size"] >= TAILLE_MAX_UN_FICHIER)
+        if ($fichiers["size"] >= TAILLE_MAX_UN_FICHIER)
         {
           // Vérifie que la taille de tous les fichiers est inferieur ou égale à la taille max. Si ce n'est pas le cas on affiche un message d'erreur
           if ($tailleDesFichiers <= TAILLE_MAX)
           {
-            // Vérifie que le commentaire contient quelques chose. Si ce n'est pas le cas on affiche un message d'erreur
-            if($commentaire != "")
-            {
-              $nomDuFichier = basename($fichiers['name'][$i]); // Nom du fichier
-              $typeDuFichier = $fichiers["type"][$i]; // Type de fichier
-              $cheminCible = $dossierCible . uniqid()."-".$nomDuFichier; // Indique le chemin où on veut stocker l'image
+            $nomDuFichier = uniqid() . "-" . basename($fichiers['name'][$i]); // Nom du fichier
+            $typeDuFichier = $fichiers["type"][$i]; // Type de fichier
+            $cheminCible = $dossierCible . $nomDuFichier; // Indique le chemin où on veut stocker l'image
 
-              // Stock le fichier dans un dossier 
-              if (move_uploaded_file($fichiers["tmp_name"][$i], $cheminCible))
+            // Stock le fichier dans un dossier 
+            if (move_uploaded_file($fichiers["tmp_name"][$i], $cheminCible))
+            {
+              // Ajoute un commentaire
+              if ($creeUnNouveauCommentaire)
               {
-                // Ajoute à la base de données
-                AjouterUnPost($commentaire, $typeDuFichier, $nomDuFichier);
+                AjouterUnCommentaire($commentaire);
+                $creeUnNouveauCommentaire = false;
               }
-              else
-              {
-                $messageErreur = "Les fichiers n'ont pas pu être upload.";
-              }
+
+              // Ajoute à la base de données
+              AjouterUnPost($typeDuFichier, $nomDuFichier, $commentaire);
             }
             else
             {
-              $messageErreur = "Il manque un commentaire";
-              break;
+              $messageErreur = "Les fichiers n'ont pas pu être upload.";
             }
           }
           else
@@ -77,13 +80,13 @@
         }
         else
         {
-          $messageErreur = "Le fichier ". $fichiers['name'][$i] . " dépasse 3Mo";
+          $messageErreur = "Le fichier " . $fichiers['name'][$i] . " dépasse 3Mo";
           break;
         }
       }
       else
       {
-        if($fichiers["name"][$i] == "")
+        if ($fichiers["name"][$i] == "")
         {
           $messageErreur = "Veuillez selectionner un fichier.";
           break;
@@ -95,8 +98,12 @@
         }
       }
     }
-
   }
+  else
+  {
+    $messageErreur = "Il manque un commentaire";
+  }
+}
 
 ?>
 <!DOCTYPE html>
@@ -116,10 +123,10 @@
 
 <body class="bg-body">
 
-<header>
+  <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-      <a class="navbar-brand my-3" href="#"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
+        <a class="navbar-brand my-3" href="#"><i class="fa-2xl fa-brands fa-bootstrap"></i> Faceboot</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -141,14 +148,14 @@
 
     <h2 class="text-center mb-5">Ajouter un post</h2>
     <div class=" my-3">
-      <p class="text-danger"><strong><?=$messageErreur?></strong></p>
+      <p class="text-danger"><strong><?= $messageErreur ?></strong></p>
     </div>
 
     <form method="POST" enctype="multipart/form-data">
       <div class="mb-4">
         <label class="mb-2" for="floatingTextarea2">Commentaire : </label>
         <div class="form-floating">
-          <textarea name="commentaire" class="form-control areaPost" id="floatingTextarea2" style="height: 200px"><?=$commentaire?></textarea>
+          <textarea name="commentaire" class="form-control areaPost" id="floatingTextarea2" style="height: 200px"><?= $commentaire ?></textarea>
         </div>
       </div>
       <div class="mb-4">

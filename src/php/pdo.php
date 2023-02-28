@@ -8,8 +8,8 @@
 */
 require_once "database.php";
 
-// Ajoute un nouveau Post
-function AjouterUnPost($commentaire, $typeMedia, $nomMedia)
+// Ajoute un nouveau commentaire 
+function AjouterUnCommentaire($commentaire)
 {
     try
     {
@@ -18,12 +18,23 @@ function AjouterUnPost($commentaire, $typeMedia, $nomMedia)
             VALUES (?);
         ");
         $query->execute([$commentaire]);
+    }
+    catch(PDOException $e)
+    {
+        echo 'Exception reçue : ',  $e->getMessage(), "\n";
+    }
+}
 
+// Ajoute un nouveau Post
+function AjouterUnPost($typeMedia, $nomMedia, $commentaire)
+{
+    try
+    {
         $query = getConnexion()->prepare("
             INSERT INTO media (typeMedia, nomMedia, idPost)
-            VALUES (?, ?, LAST_INSERT_ID());
+            VALUES (?, ?, (SELECT MAX(idPost) FROM post WHERE commentaire = ?));
         ");
-        $query->execute([$typeMedia, $nomMedia]);
+        $query->execute([$typeMedia, $nomMedia, $commentaire]);
     }
     catch(PDOException $e)
     {
