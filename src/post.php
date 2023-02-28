@@ -8,7 +8,6 @@
   */
 
 require_once "php/pdo.php";
-require_once "php/tools.php";
 
 // Constantes...
 define('TAILLE_MAX', 70000000); // 70Mo

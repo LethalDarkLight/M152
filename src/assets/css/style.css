@@ -10,6 +10,18 @@
 
 }
 
+.imageContainerWidth
+{
+    width: 80%;
+}
+
+.images
+{
+    width: 450px;
+    height: 300px;
+    object-fit: cover;
+}
+
 /* Écran plus petit que  */
 @media screen and (max-width: 1200px)
 {
@@ -34,5 +46,15 @@
     .mainContainer
     {
         width: 95%;
+    }
+
+    .imageContainerWidth
+    {
+        width: 95%;
+    }
+
+    .imageContainerWidth img
+    {
+        width: 100%;
     }
 }

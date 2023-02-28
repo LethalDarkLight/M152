@@ -6,6 +6,9 @@
 * Date        : 02.02.2023
 * Version     : 1.0.0
 */
+
+require_once "php/tools.php";
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -46,9 +49,12 @@
   </header>
 
   <main class="container-fluid my-4">
-    <div class="container-fluid" id="divUser">
-      <h5 class="card-title">Bienvenue "nom de l'utilisateur"</h5>
-      <img src="assets/img/photoProfil.png" alt="photo de profil" style="width: 300px;">
+    <div class="container-fluid imageContainerWidth my-3" id="divUser">
+      <h5 class="card-title">Bienvenue</h5>
+      <img class="img-fluid img-thumbnail" src="assets/img/photoProfil.png" alt="photo de profil">
+    </div>
+    <div class="container-fluid imageContainerWidth my-5">
+      <?=AfficherLesImages();?>
     </div>
   </main>
 
