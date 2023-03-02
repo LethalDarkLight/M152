@@ -54,7 +54,7 @@ require_once "php/tools.php";
       <img class="img-fluid img-thumbnail" src="assets/img/photoProfil.png" alt="photo de profil">
     </div>
     <div class="container-fluid imageContainerWidth my-5">
-      <?=AfficherLesImages();?>
+      <?=AfficherLesMedias();?>
     </div>
   </main>
 

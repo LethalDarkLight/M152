@@ -10,18 +10,18 @@
 require_once "php/pdo.php";
 
 // Constantes...
-define('TAILLE_MAX', 70000000); // 70Mo
-define('TAILLE_MAX_UN_FICHIER', 3000000); // 30Mo
+define('TAILLE_MAX', 350000000); // 350M est la taille max du post
+define('TAILLE_MAX_UN_FICHIER', 80000000); // 80M taille max d'un fichier
 
 // Filtrer les champs...
 $submit = filter_input(INPUT_POST, "submit", FILTER_SANITIZE_SPECIAL_CHARS);
 $commentaire = filter_input(INPUT_POST, "commentaire", FILTER_SANITIZE_SPECIAL_CHARS);
 
-$typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg"); // Correspond au type de fichier accepté
+$typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg", "video/mp4", "audio/mp3"); // Correspond au type de fichier accepté
 $dossierCible = dirname(__DIR__) . "/src/uploads/"; // Chemin vers le dossier de stockage
 $tailleDesFichiers = 0; // Correspond à la taille total des fichiers
 
-$messageErreur = "";
+$message = "";
 
 if ($submit)
 {
@@ -40,7 +40,7 @@ if ($submit)
     // Parcourir tout les fichiers
     for ($i = 0; $i < count($fichiers['name']); $i++)
     {
-      // On regarde si le type de fichier correspond à une image. Si ce n'est pas le cas on affiche un message d'erreur
+      // On regarde si le type de fichier est accepté
       if (in_array($fichiers['type'][$i], $typeDeFichierAccepter))
       {
         // Vérifie que la taille de chaques fichier est inferieur ou égale à la taille max d'un fichier. Si ce n'est pas le cas on affiche un message d'erreur
@@ -63,23 +63,24 @@ if ($submit)
                 $creeUnNouveauCommentaire = false;
               }
 
-              // Ajoute à la base de données
+              // Ajoute un post
               AjouterUnPost($typeDuFichier, $nomDuFichier, $commentaire);
+              $message = "<p class='text-success'><strong>Le post à été crée.</strong></p>";
             }
             else
             {
-              $messageErreur = "Les fichiers n'ont pas pu être upload.";
+              $message = "<p class='text-danger'><strong>Les fichiers n'ont pas pu être upload.</strong></p>";
             }
           }
           else
           {
-            $messageErreur = "Les fichiers sont trop volumineux.";
+            $message = "<p class='text-danger'><strong>L'ensemble des fichiers dépassent 350Mo.</strong></p>";
             break;
           }
         }
         else
         {
-          $messageErreur = "Le fichier " . $fichiers['name'][$i] . " dépasse 3Mo";
+          $message = "<p class='text-danger'><strong>Le fichier " . $fichiers['name'][$i] . " dépasse 80Mo</strong></p>";
           break;
         }
       }
@@ -87,12 +88,12 @@ if ($submit)
       {
         if ($fichiers["name"][$i] == "")
         {
-          $messageErreur = "Veuillez selectionner un fichier.";
+          $message = "<p class='text-danger'><strong>Veuillez selectionner un fichier.</strong></p>";
           break;
         }
         else
         {
-          $messageErreur = "Seul les fichiers de types png jpg et jpeg sont pris en charge.";
+          $message = "<p class='text-danger'><strong>Seul les fichiers de types png, jpg, jpeg, mp3 et mp4 sont pris en charge.</strong></p>";
           break;
         }
       }
@@ -100,7 +101,7 @@ if ($submit)
   }
   else
   {
-    $messageErreur = "Il manque un commentaire";
+    $message = "<p class='text-danger'><strong>Il manque un commentaire.</strong></p>";
   }
 }
 
@@ -147,7 +148,7 @@ if ($submit)
 
     <h2 class="text-center mb-5">Ajouter un post</h2>
     <div class=" my-3">
-      <p class="text-danger"><strong><?= $messageErreur ?></strong></p>
+      <?= $message ?>
     </div>
 
     <form method="POST" enctype="multipart/form-data">
@@ -159,7 +160,7 @@ if ($submit)
       </div>
       <div class="mb-4">
         <label for="formFile" class="form-label">Image :</label>
-        <input class="form-control" type="file" name="files[]" id="formFile" multiple="multiple" accept="image/png, image/jpg, image/jpeg">
+        <input class="form-control" type="file" name="files[]" id="formFile" multiple="multiple" accept="image/png, image/jpg, image/jpeg, video/mp4, audio/mp3">
       </div>
 
       <div class="d-flex justify-content-end">

@@ -9,11 +9,19 @@
 require_once "php/pdo.php";
 
 
-function AfficherLesImages()
+function AfficherLesMedias()
 {
-    $affichage = '<h5 class="card-title">Tout mes postes</h5>';
     $commentaires = RecupererLesCommentaire();
     $donnee = "";
+
+    if (!empty($commentaires))
+    {
+        $affichage = '<h5 class="card-title">Tout mes postes</h5>';   
+    }
+    else
+    {
+        $affichage = '<h5 class="card-title">Vous n\'avez pas encore fait de post</h5>';
+    }
 
     foreach ($commentaires as $unCommentaire)
     {
@@ -22,7 +30,19 @@ function AfficherLesImages()
 
         foreach ($medias as $key => $unMedia)
         {
-            $affichage .= '<img class="mt-3 mb-1 me-3 images" src="./uploads/'.$unMedia['nomMedia'].'">';
+            $typeDeMedia = explode("/", $unMedia['typeMedia'])[0]; // Enleve le nom de l'extention du type de fichier pour avoir uniquement son type (image, video, etc...)
+            if ($typeDeMedia == "image") {
+                $affichage .= '<img class="mt-3 mb-1 me-3 medias" src="./uploads/'.$unMedia['nomMedia'].'">';
+            }
+
+            if ($typeDeMedia == "video") {
+                $affichage .= '<video class="mt-3 mb-1 me-3 medias" autoplay loop muted>
+                <source src="./uploads/'.$unMedia['nomMedia'].'" type="'. $unMedia['typeMedia'] .'">';
+            }
+
+            if ($typeDeMedia == "audio") {
+                $affichage .= '<img class="mt-3 mb-1 me-3 medias" src="./uploads/'.$unMedia['nomMedia'].'">';
+            }
         }
 
         $affichage .= '<div>'.$unCommentaire["commentaire"].'</div> </div>';
