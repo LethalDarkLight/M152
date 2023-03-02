@@ -17,7 +17,7 @@ define('TAILLE_MAX_UN_FICHIER', 80000000); // 80M taille max d'un fichier
 $submit = filter_input(INPUT_POST, "submit", FILTER_SANITIZE_SPECIAL_CHARS);
 $commentaire = filter_input(INPUT_POST, "commentaire", FILTER_SANITIZE_SPECIAL_CHARS);
 
-$typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg", "video/mp4", "audio/mp3"); // Correspond au type de fichier accepté
+$typeDeFichierAccepter = array("image/png", "image/jpg", "image/jpeg", "video/mp4", "audio/mpeg"); // Correspond au type de fichier accepté
 $dossierCible = dirname(__DIR__) . "/src/uploads/"; // Chemin vers le dossier de stockage
 $tailleDesFichiers = 0; // Correspond à la taille total des fichiers
 

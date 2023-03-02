@@ -32,19 +32,19 @@ function AfficherLesMedias()
         {
             $typeDeMedia = explode("/", $unMedia['typeMedia'])[0]; // Enleve le nom de l'extention du type de fichier pour avoir uniquement son type (image, video, etc...)
             if ($typeDeMedia == "image") {
-                $affichage .= '<img class="mt-3 mb-1 me-3 medias" src="./uploads/'.$unMedia['nomMedia'].'">';
+                $affichage .= '<img class="my-2 mx-2 medias" src="./uploads/'.$unMedia['nomMedia'].'" alt="'.$unMedia['nomMedia'].'">';
             }
 
             if ($typeDeMedia == "video") {
-                $affichage .= '<video class="mt-3 mb-1 me-3 medias" autoplay loop muted>
-                <source src="./uploads/'.$unMedia['nomMedia'].'" type="'. $unMedia['typeMedia'] .'">';
+                $affichage .= '<video class="my-2 mx-2 medias" autoplay loop muted>
+                <source src="./uploads/'.$unMedia['nomMedia'].'" type="'. $unMedia['typeMedia'] .'"></video>';
             }
 
             if ($typeDeMedia == "audio") {
-                $affichage .= '<img class="mt-3 mb-1 me-3 medias" src="./uploads/'.$unMedia['nomMedia'].'">';
+                $affichage .= '<audio controls class="my-2 mx-2" style="width: 400px">
+                <source src="./uploads/'.$unMedia['nomMedia'].'" type="'. $unMedia['typeMedia'] .'"></audio>';
             }
         }
-
         $affichage .= '<div>'.$unCommentaire["commentaire"].'</div> </div>';
     }
     echo $affichage;
