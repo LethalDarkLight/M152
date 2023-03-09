@@ -8,7 +8,6 @@
 */
 require_once "php/pdo.php";
 
-
 function AfficherLesMedias()
 {
     $commentaires = RecupererLesCommentaire();
@@ -48,6 +47,15 @@ function AfficherLesMedias()
         $affichage .= '<div>'.$unCommentaire["commentaire"].'</div> </div>';
     }
     echo $affichage;
+}
+
+function FichierAccepter($typeDeFichierAccepter)
+{
+    $fichierAccepter = "";
+    foreach ($typeDeFichierAccepter as $unFichierAccepter) {
+        $fichierAccepter .= $unFichierAccepter . ", ";
+    }
+    return $fichierAccepter;
 }
 
 ?>
