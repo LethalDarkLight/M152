@@ -23,85 +23,89 @@ $tailleDesFichiers = 0; // Correspond à la taille total des fichiers
 
 $message = "";
 
+// Boutton pressé
 if ($submit)
 {
-  // Vérifie que le commentaire contient quelques chose. Si ce n'est pas le cas on affiche un message d'erreur
+  // Vérifie qu'il y a un commentaire
   if ($commentaire != "")
   {
     $fichiers = $_FILES['files'];
-    $creeUnNouveauCommentaire = true; // Bool qui permet d'attribuer 1 commentaire à plusieurs post
 
-    // Parcourir tout les fichiers pour connaître la taille de l'ensemble des fichiers selectionné
-    foreach ($fichiers['size'] as $key => $tailleUnFichier)
+    // Permet de vérifier que $_FILES contient un fichier
+    if ($fichiers['name'][0] != "")
     {
-      $tailleDesFichiers += $tailleUnFichier;
-    }
-
-    // Parcourir tout les fichiers
-    for ($i = 0; $i < count($fichiers['name']); $i++)
-    {
-      // On regarde si le type de fichier est accepté
-      if (in_array($fichiers['type'][$i], $typeDeFichierAccepter))
+      $creeUnNouveauCommentaire = true; // Bool qui permet d'attribuer 1 commentaire à plusieurs post
+  
+      // Parcourir tout les fichiers pour connaître la taille de l'ensemble des fichiers selectionné
+      foreach ($fichiers['size'] as $key => $tailleUnFichier)
       {
-        // Vérifie que la taille de chaques fichier est inferieur ou égale à la taille max d'un fichier. Si ce n'est pas le cas on affiche un message d'erreur
-        if ($fichiers["size"] >= TAILLE_MAX_UN_FICHIER)
+        $tailleDesFichiers += $tailleUnFichier;
+      }
+  
+      // Parcourir tout les fichiers
+      for ($i = 0; $i < count($fichiers['name']); $i++)
+      {
+        // On regarde si le type de fichier est accepté
+        if (in_array($fichiers['type'][$i], $typeDeFichierAccepter))
         {
-          // Vérifie que la taille de tous les fichiers est inferieur ou égale à la taille max. Si ce n'est pas le cas on affiche un message d'erreur
-          if ($tailleDesFichiers <= TAILLE_MAX)
+          // Vérifie que la taille de chaques fichier est inferieur ou égale à la taille max d'un fichier. Si ce n'est pas le cas on affiche un message d'erreur
+          if ($fichiers["size"] >= TAILLE_MAX_UN_FICHIER)
           {
-            $nomDuFichier = uniqid() . "-" . basename($fichiers['name'][$i]); // Nom du fichier
-            $typeDuFichier = $fichiers["type"][$i]; // Type de fichier
-            $cheminCible = $dossierCible . $nomDuFichier; // Indique le chemin où on veut stocker l'image
-
-            // Stock le fichier dans un dossier 
-            if (move_uploaded_file($fichiers["tmp_name"][$i], $cheminCible))
+            // Vérifie que la taille de tous les fichiers est inferieur ou égale à la taille max. Si ce n'est pas le cas on affiche un message d'erreur
+            if ($tailleDesFichiers <= TAILLE_MAX)
             {
-              // Ajoute un commentaire
-              if ($creeUnNouveauCommentaire)
+              $nomDuFichier = uniqid() . "-" . basename($fichiers['name'][$i]); // Nom du fichier
+              $typeDuFichier = $fichiers["type"][$i]; // Type de fichier
+              $cheminCible = $dossierCible . $nomDuFichier; // Indique le chemin où on veut stocker l'image
+  
+              // Stock le fichier dans un dossier 
+              if (move_uploaded_file($fichiers["tmp_name"][$i], $cheminCible))
               {
-                AjouterUnCommentaire($commentaire);
-                $creeUnNouveauCommentaire = false;
+                // Ajoute un commentaire
+                if ($creeUnNouveauCommentaire)
+                {
+                  AjouterUnCommentaire($commentaire);
+                  $creeUnNouveauCommentaire = false;
+                }
+  
+                // Ajoute un post
+                AjouterUnPost($typeDuFichier, $nomDuFichier, $commentaire);
+                $message = "<p class='alert alert-success'><strong>Le post à été crée.</strong></p>";
               }
-
-              // Ajoute un post
-              AjouterUnPost($typeDuFichier, $nomDuFichier, $commentaire);
-              $message = "<p class='text-success'><strong>Le post à été crée.</strong></p>";
+              else
+              {
+                $message = "<p class='alert alert-warning'><strong>Les fichiers n'ont pas pu être upload.</strong></p>";
+              }
             }
             else
             {
-              $message = "<p class='text-danger'><strong>Les fichiers n'ont pas pu être upload.</strong></p>";
+              $message = "<p class='alert alert-warning'><strong>L'ensemble des fichiers dépassent 350Mo.</strong></p>";
+              break;
             }
           }
           else
           {
-            $message = "<p class='text-danger'><strong>L'ensemble des fichiers dépassent 350Mo.</strong></p>";
+            $message = "<p class='alert alert-warning'><strong>Le fichier " . $fichiers['name'][$i] . " dépasse 80Mo</strong></p>";
             break;
           }
         }
         else
         {
-          $message = "<p class='text-danger'><strong>Le fichier " . $fichiers['name'][$i] . " dépasse 80Mo</strong></p>";
+          $message = "<p class='alert alert-warning'><strong>Seul les fichiers de types png, jpg, jpeg, mp3 et mp4 sont pris en charge.</strong></p>";
           break;
         }
-      }
-      else
-      {
-        if ($fichiers["name"][$i] == "")
-        {
-          $message = "<p class='text-danger'><strong>Veuillez selectionner un fichier.</strong></p>";
-          break;
-        }
-        else
-        {
-          $message = "<p class='text-danger'><strong>Seul les fichiers de types png, jpg, jpeg, mp3 et mp4 sont pris en charge.</strong></p>";
-          break;
-        }
-      }
+      }  
+    }
+    else
+    {
+      AjouterUnCommentaire($commentaire);
+      $message = "<p class='alert alert-success'><strong>Le post à été crée.</strong></p>";
     }
   }
   else
   {
-    $message = "<p class='text-danger'><strong>Il manque un commentaire.</strong></p>";
+    $message = "<p class='alert alert-warning'><strong>Veuillez écrire un commentaire.</strong></p>";
+    
   }
 }
 
